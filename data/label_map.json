@@ -1,0 +1,20 @@
+{
+  "label2id": {
+    "Education": 0,
+    "Electricity": 1,
+    "Environment": 2,
+    "Governance": 3,
+    "Health": 4,
+    "Infrastructure": 5,
+    "Water & Sanitation": 6
+  },
+  "id2label": {
+    "0": "Education",
+    "1": "Electricity",
+    "2": "Environment",
+    "3": "Governance",
+    "4": "Health",
+    "5": "Infrastructure",
+    "6": "Water & Sanitation"
+  }
+}

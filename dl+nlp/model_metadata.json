@@ -1,0 +1,17 @@
+{
+  "classes": [
+    "Broken Road Sign Issues",
+    "Damaged Road issues",
+    "Illegal Parking Issues",
+    "Littering Garbage on Public Places Issues",
+    "Mixed Issues",
+    "Pothole Issues",
+    "Vandalism Issues"
+  ],
+  "img_size": 224,
+  "test_accuracy": 0.5100069013112492,
+  "total_params": 24690247,
+  "total_images": 9660,
+  "test_images": 1449,
+  "architecture": "ResNet50"
+}
