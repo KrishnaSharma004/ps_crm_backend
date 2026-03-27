@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS departments (
 -- ── Field officers and supervisors ─────────────────────────────────────
 CREATE TABLE IF NOT EXISTS officers (
     id                VARCHAR(50)  PRIMARY KEY,
+    govt_id           VARCHAR(50)  UNIQUE,
     name              VARCHAR(100) NOT NULL,
     email             VARCHAR(100) UNIQUE,
     password          VARCHAR(255),

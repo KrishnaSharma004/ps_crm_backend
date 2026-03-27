@@ -85,16 +85,16 @@ router.post("/citizen/login", async (req, res) => {
 // ── OFFICER: POST /auth/officer/register ────────────────────────────────────
 router.post("/officer/register", async (req, res) => {
     try {
-        const { name, email, password, dept_id } = req.body;
+        const { name, email, govt_id, password, dept_id } = req.body;
 
-        if (!name || !email || !password || !dept_id) {
-            return res.status(400).json({ error: "Name, email, password, and dept_id are required" });
+        if (!name || !email || !govt_id || !password || !dept_id) {
+            return res.status(400).json({ error: "Name, email, govt_id, password, and dept_id are required" });
         }
 
-        // Check if officer already exists
-        const existing = await db.queryOne("SELECT * FROM officers WHERE email = ?", [email]);
+        // Check if officer already exists by email or govt_id
+        const existing = await db.queryOne("SELECT * FROM officers WHERE email = ? OR govt_id = ?", [email, govt_id]);
         if (existing) {
-            return res.status(400).json({ error: "Officer with this email already exists" });
+            return res.status(400).json({ error: "Officer with this email or govt_id already exists" });
         }
 
         const id = "OFF_" + Date.now();
@@ -102,9 +102,9 @@ router.post("/officer/register", async (req, res) => {
 
         // Expected officers table insertion
         await db.query(
-            `INSERT INTO officers (id, name, email, password, dept_id, is_active, resolution_rate)
-             VALUES (?, ?, ?, ?, ?, 1, 100)`,
-            [id, name, email, hashedPassword, dept_id]
+            `INSERT INTO officers (id, govt_id, name, email, password, dept_id, is_active, resolution_rate)
+             VALUES (?, ?, ?, ?, ?, ?, 1, 100)`,
+            [id, govt_id, name, email, hashedPassword, dept_id]
         );
 
         res.status(201).json({ message: "Officer registered successfully", officer_id: id });
@@ -116,13 +116,18 @@ router.post("/officer/register", async (req, res) => {
 // ── OFFICER: POST /auth/officer/login ───────────────────────────────────────
 router.post("/officer/login", async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { govt_id, email, password } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({ error: "Email and password required" });
+        if (!password || (!email && !govt_id)) {
+            return res.status(400).json({ error: "Password and either email or govt_id are required" });
         }
 
-        const officer = await db.queryOne("SELECT * FROM officers WHERE email = ?", [email]);
+        let officer;
+        if (govt_id) {
+            officer = await db.queryOne("SELECT * FROM officers WHERE govt_id = ?", [govt_id]);
+        } else {
+            officer = await db.queryOne("SELECT * FROM officers WHERE email = ?", [email]);
+        }
         
         if (!officer) {
             return res.status(404).json({ error: "Officer not found" });
@@ -139,7 +144,16 @@ router.post("/officer/login", async (req, res) => {
             { expiresIn: "10h" } // Officers have shorter sessions
         );
 
-        res.json({ message: "Officer login successful", token, user: { id: officer.id, name: officer.name, role: "officer" } });
+        res.json({ 
+            message: "Officer login successful", 
+            token, 
+            user: { 
+                id: officer.id, 
+                govt_id: officer.govt_id, 
+                name: officer.name, 
+                role: "officer" 
+            } 
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
