@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS citizens (
     name        VARCHAR(100),
     aadhaar     VARCHAR(12)  UNIQUE,
     mobile      VARCHAR(10)  UNIQUE,
-    password    VARCHAR(255),
     state       VARCHAR(100),
     district    VARCHAR(100),
     pincode     VARCHAR(10),
@@ -35,15 +34,12 @@ CREATE TABLE IF NOT EXISTS departments (
 -- ── Field officers and supervisors ─────────────────────────────────────
 CREATE TABLE IF NOT EXISTS officers (
     id                VARCHAR(50)  PRIMARY KEY,
-    govt_id           VARCHAR(50)  UNIQUE,
     name              VARCHAR(100) NOT NULL,
-    email             VARCHAR(100) UNIQUE,
-    password          VARCHAR(255),
     dept_id           VARCHAR(50),
     mobile            VARCHAR(10),
     current_lat       DECIMAL(10, 7) DEFAULT 28.6139000,
     current_lon       DECIMAL(10, 7) DEFAULT 77.2090000,
-    is_active         TINYINT(1)   DEFAULT 1,
+    is_active         TINYINT   DEFAULT 1,
     active_complaints INT          DEFAULT 0,
     resolution_rate   DECIMAL(5,2) DEFAULT 95.00,
     shift_end         DATETIME,
@@ -51,6 +47,7 @@ CREATE TABLE IF NOT EXISTS officers (
     created_at        DATETIME     DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (dept_id) REFERENCES departments(id)
 );
+
 
 -- ── Complaints filed by citizens ────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS complaints (
@@ -128,28 +125,28 @@ INSERT IGNORE INTO departments (id, name, sla_hours, zone) VALUES
 
 -- ── Seed officers ───────────────────────────────────────────────────────
 INSERT IGNORE INTO officers
-    (id, govt_id, email, password, name, dept_id, mobile, current_lat, current_lon,
+    (id, name, dept_id, mobile, current_lat, current_lon,
      is_active, active_complaints, resolution_rate, shift_end)
 VALUES
-    ('off_01', 'PWD-4401', 'ramesh@pwd.gov', '$2a$10$wI/zB9UUB6P7R86y.1bJb..B1yHMyE59G5h/b11z8X1cTrxH8d3Xm', 'Ramesh Kumar',   'dept_pwd',   '9811001001', 28.6139, 77.2090, 1, 2, 88.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
-    ('off_02', 'PWD-4402', 'suresh@pwd.gov', '$2a$10$wI/zB9UUB6P7R86y.1bJb..B1yHMyE59G5h/b11z8X1cTrxH8d3Xm', 'Suresh Sharma',  'dept_pwd',   '9811001002', 28.6200, 77.2150, 1, 1, 92.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
-    ('off_03', 'MCD-9903', 'priya@mcd.gov', '$2a$10$wI/zB9UUB6P7R86y.1bJb..B1yHMyE59G5h/b11z8X1cTrxH8d3Xm', 'Priya Singh',    'dept_mcd',   '9811001003', 28.6100, 77.2050, 1, 3, 85.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
-    ('off_04', 'MCD-9904', 'anjali@mcd.gov', '$2a$10$wI/zB9UUB6P7R86y.1bJb..B1yHMyE59G5h/b11z8X1cTrxH8d3Xm', 'Anjali Verma',   'dept_mcd',   '9811001004', 28.6300, 77.2200, 1, 0, 95.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
-    ('off_05', 'ELEC-2205', 'vikram@power.gov', '$2a$10$wI/zB9UUB6P7R86y.1bJb..B1yHMyE59G5h/b11z8X1cTrxH8d3Xm', 'Vikram Yadav',   'dept_elec',  '9811001005', 28.6050, 77.1980, 1, 1, 90.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
-    ('off_06', 'WAT-1106', 'deepak@djb.gov', '$2a$10$wI/zB9UUB6P7R86y.1bJb..B1yHMyE59G5h/b11z8X1cTrxH8d3Xm', 'Deepak Patel',   'dept_water', '9811001006', 28.6180, 77.2120, 1, 2, 87.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
-    ('off_07', 'POL-7707', 'neha@police.gov', '$2a$10$wI/zB9UUB6P7R86y.1bJb..B1yHMyE59G5h/b11z8X1cTrxH8d3Xm', 'Neha Gupta',     'dept_pol',   '9811001007', 28.6250, 77.2080, 1, 0, 98.00, DATE_ADD(NOW(), INTERVAL 8 HOUR));
+    ('off_01','Ramesh Kumar',   'dept_pwd',   '9811001001', 28.6139, 77.2090, 1, 2, 88.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
+    ('off_02','Suresh Sharma',  'dept_pwd',   '9811001002', 28.6200, 77.2150, 1, 1, 92.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
+    ('off_03','Priya Singh',    'dept_mcd',   '9811001003', 28.6100, 77.2050, 1, 3, 85.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
+    ('off_04','Anjali Verma',   'dept_mcd',   '9811001004', 28.6300, 77.2200, 1, 0, 95.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
+    ('off_05','Vikram Yadav',   'dept_elec',  '9811001005', 28.6050, 77.1980, 1, 1, 90.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
+    ('off_06','Deepak Patel',   'dept_water', '9811001006', 28.6180, 77.2120, 1, 2, 87.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
+    ('off_07','Neha Gupta',     'dept_pol',   '9811001007', 28.6250, 77.2080, 1, 0, 98.00, DATE_ADD(NOW(), INTERVAL 8 HOUR));
 
 INSERT INTO citizens (id, name, aadhaar, mobile, state, district, pincode, verified_at)
 VALUES 
     ('cit_101', 'Anjali Gupta', '987654321098', '9123456789', 'Karnataka', 'Bengaluru', '560001', NULL),
-     ('cit_102', 'Vikram Singh', '456789012345', '9988776655', 'Delhi', 'New Delhi', '110001', '2026-03-23 11:00:00'),
-    ('cit_103', 'Sanya Iyer', '234567890123', '9845098765', 'Tamil Nadu', 'Chennai', '600001', NULL, CURRENT_TIMESTAMP),
-    ('cit_104', 'Amit Singh', '345678901234', '9910011223', 'Uttar Pradesh', 'Lucknow', '226001', '2026-03-22 14:15:00', '2026-03-21 18:00:00'),
-    ('cit_105', 'Megha Rao', '456789012356', '9741000555', 'Karnataka', 'Mysuru', '570001', NULL, CURRENT_TIMESTAMP),
-    ('cit_106', 'Gopal Krishnan', '567890123456', '9444012345', 'Kerala', 'Thiruvananthapuram', '695001', '2026-01-15 09:00:00', '2026-01-10 12:00:00'),
-    ('cit_107', 'Debarati Bose', '678901234567', '9830065432', 'West Bengal', 'Kolkata', '700001', '2026-03-24 11:00:00', '2026-03-24 08:30:00');
+	('cit_102', 'Vikram Singh', '456789012345', '9988776655', 'Delhi', 'New Delhi', '110001', '2026-03-23 11:00:00'),
+    ('cit_103', 'Sanya Iyer', '234567890123', '9845098765', 'Tamil Nadu', 'Chennai', '600001', CURRENT_TIMESTAMP),
+    ('cit_104', 'Amit Singh', '345678901234', '9910011223', 'Uttar Pradesh', 'Lucknow', '226001', '2026-03-22 14:15:00'),
+    ('cit_105', 'Megha Rao', '456789012356', '9741000555', 'Karnataka', 'Mysuru', '570001', CURRENT_TIMESTAMP),
+    ('cit_106', 'Gopal Krishnan', '567890123456', '9444012345', 'Kerala', 'Thiruvananthapuram', '695001', '2026-01-15 09:00:00'),
+    ('cit_107', 'Debarati Bose', '678901234567', '9830065432', 'West Bengal', 'Kolkata', '700001', '2026-03-24 11:00:00');
 
--------complaints--------------------
+-- -----complaints--------------------
 INSERT IGNORE INTO complaints (
     id, citizen_id, dept_id, officer_id, status, description, 
     lat, lon, address, severity, sla_deadline
@@ -169,3 +166,12 @@ INSERT IGNORE INTO otp_store (mobile, otp, expires_at) VALUES
 -- ── Notification log ────────────────────────────────────────────────────
 INSERT IGNORE INTO notification_log (citizen_id, mobile, message, status) VALUES 
 ('cit_101', '9123456789', 'Your complaint CMP-001 has been received.', 'sent');
+
+-- Drop all tables in correct order (FK dependencies)
+DROP TABLE IF EXISTS audit_log;
+DROP TABLE IF EXISTS notification_log;
+DROP TABLE IF EXISTS complaints;
+DROP TABLE IF EXISTS otp_store;
+DROP TABLE IF EXISTS officers;
+DROP TABLE IF EXISTS departments;
+DROP TABLE IF EXISTS citizens;
