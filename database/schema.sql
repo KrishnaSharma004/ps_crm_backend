@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS citizens (
     name        VARCHAR(100),
     aadhaar     VARCHAR(12)  UNIQUE,
     mobile      VARCHAR(10)  UNIQUE,
+    password    VARCHAR(255),
     state       VARCHAR(100),
     district    VARCHAR(100),
     pincode     VARCHAR(10),
@@ -35,6 +36,8 @@ CREATE TABLE IF NOT EXISTS departments (
 CREATE TABLE IF NOT EXISTS officers (
     id                VARCHAR(50)  PRIMARY KEY,
     name              VARCHAR(100) NOT NULL,
+    email             VARCHAR(100) UNIQUE,
+    password          VARCHAR(255),
     dept_id           VARCHAR(50),
     mobile            VARCHAR(10),
     current_lat       DECIMAL(10, 7) DEFAULT 28.6139000,
