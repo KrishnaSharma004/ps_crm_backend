@@ -128,16 +128,16 @@ INSERT IGNORE INTO departments (id, name, sla_hours, zone) VALUES
 
 -- ── Seed officers ───────────────────────────────────────────────────────
 INSERT IGNORE INTO officers
-    (id, name, dept_id, mobile, current_lat, current_lon,
+    (id, govt_id, email, password, name, dept_id, mobile, current_lat, current_lon,
      is_active, active_complaints, resolution_rate, shift_end)
 VALUES
-    ('off_01','Ramesh Kumar',   'dept_pwd',   '9811001001', 28.6139, 77.2090, 1, 2, 88.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
-    ('off_02','Suresh Sharma',  'dept_pwd',   '9811001002', 28.6200, 77.2150, 1, 1, 92.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
-    ('off_03','Priya Singh',    'dept_mcd',   '9811001003', 28.6100, 77.2050, 1, 3, 85.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
-    ('off_04','Anjali Verma',   'dept_mcd',   '9811001004', 28.6300, 77.2200, 1, 0, 95.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
-    ('off_05','Vikram Yadav',   'dept_elec',  '9811001005', 28.6050, 77.1980, 1, 1, 90.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
-    ('off_06','Deepak Patel',   'dept_water', '9811001006', 28.6180, 77.2120, 1, 2, 87.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
-    ('off_07','Neha Gupta',     'dept_pol',   '9811001007', 28.6250, 77.2080, 1, 0, 98.00, DATE_ADD(NOW(), INTERVAL 8 HOUR));
+    ('off_01', 'PWD-4401', 'ramesh@pwd.gov', '$2a$10$wI/zB9UUB6P7R86y.1bJb..B1yHMyE59G5h/b11z8X1cTrxH8d3Xm', 'Ramesh Kumar',   'dept_pwd',   '9811001001', 28.6139, 77.2090, 1, 2, 88.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
+    ('off_02', 'PWD-4402', 'suresh@pwd.gov', '$2a$10$wI/zB9UUB6P7R86y.1bJb..B1yHMyE59G5h/b11z8X1cTrxH8d3Xm', 'Suresh Sharma',  'dept_pwd',   '9811001002', 28.6200, 77.2150, 1, 1, 92.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
+    ('off_03', 'MCD-9903', 'priya@mcd.gov', '$2a$10$wI/zB9UUB6P7R86y.1bJb..B1yHMyE59G5h/b11z8X1cTrxH8d3Xm', 'Priya Singh',    'dept_mcd',   '9811001003', 28.6100, 77.2050, 1, 3, 85.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
+    ('off_04', 'MCD-9904', 'anjali@mcd.gov', '$2a$10$wI/zB9UUB6P7R86y.1bJb..B1yHMyE59G5h/b11z8X1cTrxH8d3Xm', 'Anjali Verma',   'dept_mcd',   '9811001004', 28.6300, 77.2200, 1, 0, 95.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
+    ('off_05', 'ELEC-2205', 'vikram@power.gov', '$2a$10$wI/zB9UUB6P7R86y.1bJb..B1yHMyE59G5h/b11z8X1cTrxH8d3Xm', 'Vikram Yadav',   'dept_elec',  '9811001005', 28.6050, 77.1980, 1, 1, 90.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
+    ('off_06', 'WAT-1106', 'deepak@djb.gov', '$2a$10$wI/zB9UUB6P7R86y.1bJb..B1yHMyE59G5h/b11z8X1cTrxH8d3Xm', 'Deepak Patel',   'dept_water', '9811001006', 28.6180, 77.2120, 1, 2, 87.00, DATE_ADD(NOW(), INTERVAL 8 HOUR)),
+    ('off_07', 'POL-7707', 'neha@police.gov', '$2a$10$wI/zB9UUB6P7R86y.1bJb..B1yHMyE59G5h/b11z8X1cTrxH8d3Xm', 'Neha Gupta',     'dept_pol',   '9811001007', 28.6250, 77.2080, 1, 0, 98.00, DATE_ADD(NOW(), INTERVAL 8 HOUR));
 
 INSERT INTO citizens (id, name, aadhaar, mobile, state, district, pincode, verified_at)
 VALUES 
