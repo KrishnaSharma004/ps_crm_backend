@@ -1,6 +1,15 @@
 import json
 import re
+import os
+import sys
 import warnings
+import logging
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+os.environ["transformers.logging"] = "ERROR"
+logging.getLogger("transformers").setLevel(logging.ERROR)
+warnings.filterwarnings('ignore')
+
 import torch
 import torch.nn as nn
 import cv2 # Make sure you have opencv-python installed if you prefer cv2, but PIL is safer
@@ -10,12 +19,10 @@ import joblib
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
-warnings.filterwarnings('ignore')
-
 # ============================================================================
 # 1. SETUP NLP MODEL (TF-IDF / BERT)
 # ============================================================================
-USE_BERT = False  # Set to True to use BERT instead of TF-IDF
+USE_BERT = True  # Set to True to use BERT instead of TF-IDF
 
 # Load Text Labels
 with open("data/label_map.json") as f:
@@ -88,7 +95,8 @@ try:
     image_model.eval()
     image_model_loaded = True
 except Exception as e:
-    print(f"Warning: Image model could not be loaded. Please check the path and classes. Error: {e}")
+    import sys
+    print(f"Warning: Image model could not be loaded. Please check the path and classes. Error: {e}", file=sys.stderr)
     image_model_loaded = False
 
 # Same transforms utilized during training
@@ -154,24 +162,31 @@ def predict_multimodal(text: str, image_path: str = None) -> dict:
 # 4. TEST IT
 # ============================================================================
 if __name__ == "__main__":
-    print("-" * 60)
-    print("STARTING MULTIMODAL COMPLAINT PIPELINE DEMO")
-    print("-" * 60)
-    
-    # Dummy Complaint Details
-    sample_text = "I want to report a huge pothole on 5th Avenue causing traffic issues and damaging car suspensions."
-    sample_image = r"dl+nlp\archive (2)\data\Road Issues\Pothole Issues\101_jpg.rf.355f5220e8c24731cb65c7a6ead7a68f.jpg"
-    
-    print(f"\n[1] NEW COMPLAINT RECEIVED:")
-    print(f"    Text  : '{sample_text}'")
-    print(f"    Image : {sample_image}")
-    
-    print("\n[2] RUNNING INFERENCE (NLP & VISION)...")
-    output = predict_multimodal(sample_text, sample_image)
-    
-    print("\n[3] PIPELINE OUTPUT RESULTS (JSON):")
-    print(json.dumps(output, indent=4))
-    
-    print("\n" + "-" * 60)
-    print("COMPLAINT SUCCESSFULLY PROCESSED!")
-    print("-" * 60)
+    import sys
+    if len(sys.argv) > 1:
+        text = sys.argv[1]
+        image_path = sys.argv[2] if len(sys.argv) > 2 else None
+        output = predict_multimodal(text, image_path)
+        print(json.dumps(output))
+    else:
+        print("-" * 60)
+        print("STARTING MULTIMODAL COMPLAINT PIPELINE DEMO")
+        print("-" * 60)
+        
+        # Dummy Complaint Details
+        sample_text = "I want to report a huge pothole on 5th Avenue causing traffic issues and damaging car suspensions."
+        sample_image = r"dl+nlp\archive (2)\data\Road Issues\Pothole Issues\101_jpg.rf.355f5220e8c24731cb65c7a6ead7a68f.jpg"
+        
+        print(f"\n[1] NEW COMPLAINT RECEIVED:")
+        print(f"    Text  : '{sample_text}'")
+        print(f"    Image : {sample_image}")
+        
+        print("\n[2] RUNNING INFERENCE (NLP & VISION)...")
+        output = predict_multimodal(sample_text, sample_image)
+        
+        print("\n[3] PIPELINE OUTPUT RESULTS (JSON):")
+        print(json.dumps(output, indent=4))
+        
+        print("\n" + "-" * 60)
+        print("COMPLAINT SUCCESSFULLY PROCESSED!")
+        print("-" * 60)

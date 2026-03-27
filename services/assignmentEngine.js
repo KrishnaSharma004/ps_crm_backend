@@ -1,13 +1,18 @@
 // services/assignmentEngine.js
 const db = require("../config/db");
+const { execFile } = require("child_process");
+const util = require("util");
+const execFilePromise = util.promisify(execFile);
 
-// Keyword map for NLP signal
-const KEYWORD_MAP = {
-    "dept_pwd":   ["pothole","road","footpath","bridge","crack","pavement"],
-    "dept_mcd":   ["garbage","trash","waste","dustbin","litter","sanitation"],
-    "dept_elec":  ["streetlight","light","electricity","power","wire","outage"],
-    "dept_water": ["water","pipe","leakage","sewage","flood","supply","tap"],
-    "dept_pol":   ["accident","crime","noise","parking","encroachment","theft"]
+// Map NLP Categories to Departments
+const NLP_DEPT_MAP = {
+    "Infrastructure": "dept_pwd",
+    "Water & Sanitation": "dept_water",
+    "Electricity": "dept_elec",
+    "Environment": "dept_mcd",
+    "Governance": "dept_pol",
+    "Health": "dept_health",
+    "Education": "dept_edu"
 };
 
 // Signal 1 — citizen dropdown
@@ -23,24 +28,38 @@ function citizenSignal(deptChoice) {
         : { deptId: null, confidence: 0 };
 }
 
-// Signal 2 — NLP on description text
-function nlpSignal(description) {
-    const text   = description.toLowerCase();
-    const scores = {};
-
-    for (const [deptId, keywords] of Object.entries(KEYWORD_MAP)) {
-        const matches  = keywords.filter(kw => text.includes(kw));
-        scores[deptId] = matches.length;
+// Signal 2 — NLP on description text & image
+async function nlpSignal(description, photoPath) {
+    if (!description) return { deptId: null, confidence: 0 };
+    try {
+        const pythonScript = "predict_combined.py";
+        const args = [pythonScript, description];
+        if (photoPath) {
+            args.push(photoPath);
+        }
+        
+        // Use exact executable if needed, but 'python' should work in environment
+        const { stdout } = await execFilePromise("python", args);
+        
+        // Find the JSON part in case there's logging noise
+        const outputLines = stdout.trim().split('\n');
+        const jsonStr = outputLines[outputLines.length - 1]; 
+        const result = JSON.parse(jsonStr);
+        
+        if (result && result.text_prediction) {
+            const category = result.text_prediction.category;
+            const confidence = result.text_prediction.confidence;
+            const deptId = NLP_DEPT_MAP[category] || null;
+            
+            // Integrate Image Prediction if available and high confidence (e.g. over 60%)
+            // Could boost confidence if it matches text category.
+            
+            return { deptId, confidence };
+        }
+    } catch (err) {
+        console.error("NLP Prediction Error:", err);
     }
-
-    const best = Object.entries(scores).sort((a,b) => b[1]-a[1])[0];
-    if (!best || best[1] === 0)
-        return { deptId: null, confidence: 0 };
-
-    return {
-        deptId:     best[0],
-        confidence: Math.min(0.4 + best[1] * 0.2, 1.0)
-    };
+    return { deptId: null, confidence: 0 };
 }
 
 // Signal 3 — GPS location zone mapping
@@ -85,7 +104,7 @@ async function findNearestOfficer(deptId, lat, lon) {
 // Main assignment engine
 async function runAssignmentEngine(complaint) {
     const s1 = citizenSignal(complaint.deptChoice);
-    const s2 = nlpSignal(complaint.description);
+    const s2 = await nlpSignal(complaint.description, complaint.photoPath);
     const s3 = locationSignal(complaint.lat, complaint.lon);
 
     const WEIGHTS = { s1: 0.40, s2: 0.35, s3: 0.25 };
